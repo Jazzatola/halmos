@@ -1,7 +1,8 @@
 package com.jamesmaggs.halmos
 
-trait Member[T] {
+import scala.language.implicitConversions
 
+trait Member[T] {
   def elementOf(set: Set[T]): Boolean
   def notElementOf(set: Set[T]) = !elementOf(set)
   def ∈(set: Set[T]) = elementOf(set)
