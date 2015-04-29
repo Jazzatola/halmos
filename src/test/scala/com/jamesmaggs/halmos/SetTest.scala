@@ -1,25 +1,31 @@
 package com.jamesmaggs.halmos
 
-import Set._
-import Member._
+import com.jamesmaggs.halmos.Member._
+import com.jamesmaggs.halmos.Set._
+import com.jamesmaggs.halmos.Generators._
 
-import org.scalatest.FunSuite
+import org.scalacheck.Arbitrary._
+import org.scalacheck.Prop._
+import org.scalacheck.Properties
 
-class SetTest extends FunSuite {
+import scala.util.Random._
 
-  val A = Set(2, 4, 6, 8)
+class SetTest extends Properties("set") {
 
-  test("membership") {
-    assert(2 ∈ A)
-    assert(3 ∉ A)
-    assert(A ∋ 2)
-    assert(A ∌ 3)
+  property("empty set is a subset of all") = forAll { set: Set[Int] =>
+    ∅ ⊂ set
   }
 
-  test("empty set") {
-    assert(2 ∉ ∅)
-    assert("3" ∉ ∅)
-    assert(false ∉ ∅)
-    assert(∅ ∌ 2)
+  property("element of") = forAll { elements: List[Int] =>
+    val set = Set(elements: _*)
+    elements.nonEmpty ==> (shuffle(elements).head ∈ set)
+  }
+
+  property("only subset of the empty set is the empty set itself") = forAll { set: Set[Int] =>
+    (set ⊂ ∅) ==> (set === ∅)
+  }
+
+  property("set equality is transitive") = forAll { (a: Set[Int], b: Set[Int], c: Set[Int]) =>
+    ((a === b) && (b === c)) ==> (a === c)
   }
 }
