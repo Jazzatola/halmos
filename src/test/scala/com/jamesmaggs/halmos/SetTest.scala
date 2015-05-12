@@ -1,10 +1,10 @@
 package com.jamesmaggs.halmos
 
-import com.jamesmaggs.halmos.Member._
+import com.jamesmaggs.halmos.Membership._
 import com.jamesmaggs.halmos.Set._
+import com.jamesmaggs.halmos.SetOps._
 import com.jamesmaggs.halmos.Generators._
 
-import org.scalacheck.Arbitrary._
 import org.scalacheck.Prop._
 import org.scalacheck.Properties
 

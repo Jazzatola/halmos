@@ -1,65 +1,47 @@
 package com.jamesmaggs.halmos
 
-sealed trait Set[+A] {
-
-  def isEmpty: Boolean
-
-  def ===[B >: A](set: Set[B]) = equals(set)
-  def =/=[B >: A](set: Set[B]) = !equals(set)
-  def ≠[B >: A](set: Set[B]) = !equals(set)
-
-  def contains[B >: A](element: B): Boolean
-  def ∋[B >: A](element: B) = contains(element)
-  def ∌[B >: A](element: B) = !contains(element)
-
-  def subsetOf[B >: A](set: Set[B]): Boolean
-  def supersetOf[B >: A](set: Set[B]) = set.subsetOf(this)
-  def ⊂[B >: A](set: Set[B]) = subsetOf(set)
-  def ⊃[B >: A](set: Set[B]) = supersetOf(set)
-  def ⊄[B >: A](set: Set[B]) = !subsetOf(set)
-  def ⊅[B >: A](set: Set[B]) = !supersetOf(set)
-  def ⊆[B >: A](set: Set[B]) = subsetOf(set) || equals(set)
-  def ⊇[B >: A](set: Set[B]) = supersetOf(set) || equals(set)
-}
-
-case object EmptySet extends Set[Nothing] {
-  override def isEmpty: Boolean = true
-  override def contains[B >: Nothing](element: B) = false
-  override def subsetOf[B >: Nothing](set: Set[B]) = true
-
-  override def equals(obj: scala.Any) = obj match {
-    case other: Set[_] => other.isEmpty
-    case _ => false
-  }
-
-  override def toString: String = "{}"
-}
-
-case class FiniteSet[A](as: A*) extends Set[A] {
-
-  lazy val elements: Seq[A] = as.distinct
-
-  override def isEmpty = elements.isEmpty
-
-  override def equals(obj: scala.Any) = obj match {
-    case EmptySet => isEmpty
-    case other: FiniteSet[_] => (this ⊂ other) && (other ⊂ this)
-    case _ => false
-  }
-
-  override def contains[B >: A](element: B) =  elements.contains(element)
-
-  override def subsetOf[B >: A](set: Set[B]) = set match {
-    case EmptySet => isEmpty
-    case other: FiniteSet[_] => elements.forall(other ∋ _)
-  }
-
-  override def toString: String = elements.mkString("{", ", ", "}")
-}
+sealed trait Set[+A]
+case object EmptySet extends Set[Nothing]
+case class FiniteSet[+A](head: A, tail: Set[A]) extends Set[A]
 
 object Set {
+
+  import EqualityOps._
+
   val empty = EmptySet
   val ∅ = empty
 
-  def apply[A](as: A*): Set[A] = if(as.isEmpty) empty else FiniteSet[A](as: _*)
+  def apply[A](as: A*): Set[A] =
+    if(as.isEmpty) empty
+    else FiniteSet[A](as.head, apply(as.tail: _*))
+
+  def isEqual[A](set: Set[A], other: Set[A]) = equality.equal(set, other)
+
+  def isEmpty[A](set: Set[A]): Boolean = set match {
+    case EmptySet => true
+    case _ => false
+  }
+
+  def isSubset[A](set: Set[A], subset: Set[A]): Boolean =
+    forAll(subset, (a: A) => contains(set, a))
+
+  def contains[A](set: Set[A], a: A): Boolean =
+    exists(set, (aa: A) => aa === a)
+
+  private def exists[A](set: Set[A], f: A => Boolean): Boolean =
+    fold(set, false)(_ || f(_))
+
+  private def forAll[A](set: Set[A], f: A => Boolean): Boolean =
+    fold(set, true)(_ && f(_))
+
+  private def fold[A,B](set: Set[A], z: B)(f: (B, A) => B): B = set match {
+    case EmptySet => z
+    case FiniteSet(a, as) => fold(as, f(z, a))(f)
+  }
+
+  implicit def defaultEquality[A]: Equality[A] = Equality.equality(_ == _)
+
+  implicit def equality[A]: Equality[Set[A]] = Equality.equality {
+    (a, b) => isSubset(a, b) && isSubset(b, a)
+  }
 }
