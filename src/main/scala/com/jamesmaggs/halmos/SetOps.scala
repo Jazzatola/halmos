@@ -25,6 +25,11 @@ trait SetOps[A] {
   def ⊇(set: Set[A]) = supersetOf(set) || isEqual(set)
 
   def mkString = Set.mkString(self)
+
+  def add(a: A) = Set.add(self, a)
+  def +(a: A) = add(a)
+
+  def size = Set.size(self)
 }
 
 object SetOps {

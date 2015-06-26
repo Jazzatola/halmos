@@ -4,7 +4,7 @@ import org.scalacheck.{Arbitrary, Gen}
 
 object Generators {
 
-  def genSet[T](genElem: Gen[T]) = Gen.listOf[T](genElem).map(Set[T])
+  implicit def arbitrarySet[A](implicit a: Arbitrary[A]): Arbitrary[Set[A]] = Arbitrary(genSet[A](a.arbitrary))
 
-  implicit def arbitrarySet[T](implicit a: Arbitrary[T]): Arbitrary[Set[T]] = Arbitrary(genSet[T](a.arbitrary))
+  def genSet[A](genElem: Gen[A]) = Gen.listOf[A](genElem).map(Set[A])
 }

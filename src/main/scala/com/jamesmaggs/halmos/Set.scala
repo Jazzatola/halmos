@@ -33,6 +33,13 @@ object Set {
   def contains[A](set: Set[A], a: A): Boolean =
     exists(set, (aa: A) => aa === a)
 
+  def add[A](set: Set[A], a: A): Set[A] =
+    if(contains(set, a)) set
+    else FiniteSet(a, set)
+
+  def size[A](set: Set[A]): Int =
+    fold(set, 0)((acc, _) => acc + 1)
+
   def mkString[A](set: Set[A]): String = set match {
     case EmptySet => "{}"
     case FiniteSet(a, as) => fold(as, "{" + a)(_ + ", " + _) + "}"
@@ -40,7 +47,7 @@ object Set {
 
   private def reverse[A](set: Set[A]): Set[A] = {
     val z: Set[A] = empty
-    fold (set, z)((acc, a) => FiniteSet(a, acc))
+    fold(set, z)((acc, a) => FiniteSet(a, acc))
   }
 
   private def exists[A](set: Set[A], f: A => Boolean): Boolean =

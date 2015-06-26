@@ -3,7 +3,8 @@ package com.jamesmaggs.halmos
 import scala.language.implicitConversions
 
 trait Membership[A] {
-  def elementOf(set: Set[A]): Boolean
+  def self: A
+  def elementOf(set: Set[A]) = Set.contains(set, self)
   def notElementOf(set: Set[A]) = !elementOf(set)
   def ∈(set: Set[A]) = elementOf(set)
   def ∉(set: Set[A]) = notElementOf(set)
@@ -11,6 +12,6 @@ trait Membership[A] {
 
 object Membership {
   implicit def asMember[A](a: A): Membership[A] = new Membership[A] {
-    override def elementOf(set: Set[A]): Boolean = Set.contains(set, a)
+    override def self = a
   }
 }
