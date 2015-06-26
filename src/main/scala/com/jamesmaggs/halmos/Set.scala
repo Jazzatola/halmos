@@ -17,9 +17,11 @@ object Set {
   val empty = EmptySet
   val ∅ = empty
 
-  def apply[A](as: A*): Set[A] =
-    if(as.isEmpty) empty
-    else FiniteSet[A](as.head, apply(as.tail: _*))
+  def apply[A](as: A*): Set[A] = reverse(construct(as.distinct, empty))
+
+  private def construct[A](as: Seq[A], set: Set[A]): Set[A] =
+    if(as.isEmpty) set
+    else construct(as.tail, FiniteSet(as.head, set))
 
   def isEqual[A](set: Set[A], other: Set[A]) = equality.equal(set, other)
 
@@ -37,6 +39,11 @@ object Set {
   def mkString[A](set: Set[A]): String = set match {
     case EmptySet => "{}"
     case FiniteSet(a, as) => fold(as, "{" + a)(_ + ", " + _) + "}"
+  }
+
+  private def reverse[A](set: Set[A]): Set[A] = {
+    val z: Set[A] = empty
+    fold (set, z)((acc, a) => FiniteSet(a, acc))
   }
 
   private def exists[A](set: Set[A], f: A => Boolean): Boolean =
