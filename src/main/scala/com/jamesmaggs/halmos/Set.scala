@@ -1,14 +1,11 @@
 package com.jamesmaggs.halmos
 
-sealed trait Set[+A]
-
-case object EmptySet extends Set[Nothing] {
+sealed trait Set[+A] {
   override def toString: String = Set.mkString(this)
 }
 
-case class FiniteSet[+A](head: A, tail: Set[A]) extends Set[A] {
-  override def toString: String = Set.mkString(this)
-}
+case object EmptySet extends Set[Nothing]
+case class FiniteSet[+A](head: A, tail: Set[A]) extends Set[A]
 
 object Set {
 
