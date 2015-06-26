@@ -23,6 +23,8 @@ trait SetOps[A] {
   def ⊅(set: Set[A]) = !supersetOf(set)
   def ⊆(set: Set[A]) = subsetOf(set) || isEqual(set)
   def ⊇(set: Set[A]) = supersetOf(set) || isEqual(set)
+
+  def mkString = Set.mkString(self)
 }
 
 object SetOps {
