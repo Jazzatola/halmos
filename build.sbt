@@ -2,7 +2,7 @@ name := "halmos"
 
 version := "0.1"
 
-scalaVersion := "2.11.6"
+scalaVersion := "2.11.7"
 
 crossPaths := false
 
@@ -11,5 +11,5 @@ scalacOptions ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "org.scalacheck" %% "scalacheck" % "1.12.2" % "test"
+  "org.scalacheck" %% "scalacheck" % "1.12.4" % "test"
 )
